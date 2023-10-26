@@ -16,7 +16,7 @@ table items{
   description varchar(1000)
   serviceable boolean
   id bigint
-  inv_number bigint
+  inv_number varchar(50)
   start timestamp
   end timestamp
   owner_id bigint
