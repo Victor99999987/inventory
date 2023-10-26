@@ -1,0 +1,60 @@
+table organizations{
+  id bigint
+  name varchar(100)
+}
+
+table departments{
+  id bigint
+  name varchar(100)
+  address varchar(200)
+  organization_id bigint
+}
+
+table items{
+  category_id bigint
+  name varchar(100)
+  description varchar(1000)
+  serviceable boolean
+  id bigint
+  inv_number bigint
+  start timestamp
+  end timestamp
+}
+
+table categories{
+  id bigint
+  name varchar(100)
+  organization_id bigint
+}
+
+table users{
+  id bigint
+  name varchar(100)
+  reporting boolean
+  position varchar(50) 
+  email varchar(50)
+  password varchar(50)
+  role varchar(10)
+  organization_id bigint
+}
+
+table moving{
+  id bigint
+  moving_date timestamp
+  item_id bigint
+  from_owner_id bigint
+  to_owner_id bigint
+  from_department_id bigint
+  to_department_id bigint
+  description varchar(1000)
+}
+
+ref: categories.id < items.category_id
+ref: organizations.id < categories.organization_id
+ref: organizations.id < departments.organization_id
+ref: organizations.id < users.organization_id
+ref: departments.id < moving.from_department_id
+ref: departments.id < moving.to_department_id
+ref: users.id < moving.from_owner_id
+ref: users.id < moving.to_owner_id
+ref: items.id < moving.item_id
