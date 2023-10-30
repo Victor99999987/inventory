@@ -41,12 +41,16 @@ table users{
 table movements{
   id bigint
   movement_date timestamp
-  item_id bigint
   from_owner_id bigint
   to_owner_id bigint
   from_department_id bigint
   to_department_id bigint
   description varchar(1000)
+}
+
+table movements_items{
+  movement_id bigint
+  item_id bigint
 }
 
 ref: categories.id < items.category_id
@@ -57,4 +61,5 @@ ref: departments.id < movements.from_department_id
 ref: departments.id < movements.to_department_id
 ref: users.id < movements.from_owner_id
 ref: users.id < movements.to_owner_id
-ref: items.id < movements.item_id
+ref: items.id < movements_items.item_id
+ref: movements.id < movements_items.movement_id
