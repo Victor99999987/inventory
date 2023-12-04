@@ -16,9 +16,9 @@ table items{
   description varchar(1000)
   serviceable boolean
   id bigint
-  inv_number bigint
-  start timestamp
-  end timestamp
+  inv_number varchar(50)
+  created timestamp
+  finished timestamp
   owner_id bigint
   user_id bigint
   department_id bigint
