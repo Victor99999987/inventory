@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.petproject.inventory.dto.MovementDto;
-import ru.petproject.inventory.dto.NewMovementDto;
+import ru.petproject.inventory.dto.MovementNewDto;
 import ru.petproject.inventory.service.MovementService;
 
 import javax.validation.Valid;
@@ -25,17 +25,17 @@ public class MovementController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    MovementDto postMovement(@Valid @RequestBody NewMovementDto newMovementDto,
-                             @RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
+    MovementDto postMovement(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                             @Valid @RequestBody MovementNewDto movementNewDto) {
         log.info("Получен запрос на эндпоинт POST /movements");
-        return null;
+        return movementService.postMovement(userId, movementNewDto);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    MovementDto patchMovement(@Valid @RequestBody MovementDto movementDto,
-                              @RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
-                              @PathVariable @Positive Long id) {
+    MovementDto patchMovement(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                              @PathVariable @Positive Long id,
+                              @Valid @RequestBody MovementDto movementDto) {
         log.info("Получен запрос на эндпоинт PATCH /movements/{}", id);
         return null;
     }
@@ -49,9 +49,8 @@ public class MovementController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<MovementDto> getCategories(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
+    List<MovementDto> getMovements(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
         log.info("Получен запрос на эндпоинт GET /movements");
         return null;
     }
-    
 }

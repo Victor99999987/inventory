@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.petproject.inventory.dto.NewUserDto;
 import ru.petproject.inventory.dto.UserDto;
+import ru.petproject.inventory.dto.UserNewDto;
+import ru.petproject.inventory.dto.UserUpdateDto;
 import ru.petproject.inventory.service.UserService;
 
 import javax.validation.Valid;
@@ -25,19 +26,19 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto postUser(@Valid @RequestBody NewUserDto newUserDto,
-                     @RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
+    UserDto postUser(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                     @Valid @RequestBody UserNewDto userNewDto) {
         log.info("Получен запрос на эндпоинт POST /users");
-        return null;
+        return userService.postUser(userId, userNewDto);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    UserDto patchUser(@Valid @RequestBody UserDto userDto,
-                      @RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
-                      @PathVariable @Positive Long id) {
+    UserDto patchUser(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                      @PathVariable @Positive Long id,
+                      @Valid @RequestBody UserUpdateDto userUpdateDto) {
         log.info("Получен запрос на эндпоинт PATCH /users/{}", id);
-        return null;
+        return userService.patchUser(userId, id, userUpdateDto);
     }
 
     @DeleteMapping("/{id}")
@@ -45,13 +46,13 @@ public class UserController {
     void deleteUser(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                     @PathVariable @Positive Long id) {
         log.info("Получен запрос на эндпоинт DELETE /users/{}", id);
+        userService.deleteUser(userId, id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     List<UserDto> getUsers(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
         log.info("Получен запрос на эндпоинт GET /users");
-        return null;
+        return userService.getUsers(userId);
     }
-
 }

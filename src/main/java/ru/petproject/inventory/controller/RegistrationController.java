@@ -6,23 +6,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.petproject.inventory.dto.RegistrationDto;
+import ru.petproject.inventory.dto.RegistrationNewDto;
 import ru.petproject.inventory.service.RegistrationService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Validated
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/registration")
 public class RegistrationController {
     private final RegistrationService registrationService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.OK)
-    RegistrationDto postRegistration(@Valid @RequestBody RegistrationDto registrationDto) {
+    @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
+    RegistrationDto postRegistration(@Valid @RequestBody RegistrationNewDto registrationNewDto) {
         log.info("Получен запрос на эндпоинт POST /registration");
-        return null;
+        return registrationService.postRegistration(registrationNewDto);
     }
 
+    @PatchMapping("/activate/{UserId}")
+    @ResponseStatus(HttpStatus.OK)
+    RegistrationDto patchActivate(@PathVariable @Positive Long userId,
+                                  @RequestParam @NotNull String code) {
+        log.info("Получен запрос на эндпоинт PATCH /activate/{}", code);
+        return registrationService.patchActivate(userId, code);
+    }
 }

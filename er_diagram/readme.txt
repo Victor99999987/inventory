@@ -1,3 +1,5 @@
 Диаграммы созданы в сервисе dbdiagram.io
 
-расшаренная ссылка https://dbdiagram.io/d/inventory-6531ff53ffbf5169f0136c50
+расшаренная ссылка https://dbdiagram.io/d/inventory-movement-registration-655d8a783be14957877b09fe
+
+

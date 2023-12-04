@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.petproject.inventory.dto.ItemDto;
-import ru.petproject.inventory.dto.NewItemDto;
+import ru.petproject.inventory.dto.ItemNewDto;
+import ru.petproject.inventory.dto.ItemUpdateDto;
 import ru.petproject.inventory.service.ItemService;
 
 import javax.validation.Valid;
@@ -25,19 +26,19 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ItemDto postItem(@Valid @RequestBody NewItemDto newItemDto,
-                     @RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
+    ItemDto postItem(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                     @Valid @RequestBody ItemNewDto itemNewDto) {
         log.info("Получен запрос на эндпоинт POST /items");
-        return null;
+        return itemService.postItem(userId, itemNewDto);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ItemDto patchItem(@Valid @RequestBody ItemDto itemDto,
-                      @RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
-                      @PathVariable @Positive Long id) {
+    ItemDto patchItem(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                      @PathVariable @Positive Long id,
+                      @Valid @RequestBody ItemUpdateDto itemUpdateDto) {
         log.info("Получен запрос на эндпоинт PATCH /items/{}", id);
-        return null;
+        return itemService.patchItem(userId, id, itemUpdateDto);
     }
 
     @DeleteMapping("/{id}")
@@ -45,11 +46,12 @@ public class ItemController {
     void deleteItem(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                     @PathVariable @Positive Long id) {
         log.info("Получен запрос на эндпоинт DELETE /items/{}", id);
+        itemService.deleteItem(userId, id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<ItemDto> getCategories(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
+    List<ItemDto> getItems(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
         log.info("Получен запрос на эндпоинт GET /items");
         return null;
     }

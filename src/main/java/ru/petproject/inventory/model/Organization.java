@@ -18,5 +18,11 @@ public class Organization {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
-    private Long name;
+    private String name;
+
+    @Column(name = "activated_code", nullable = false, length = 100)
+    private String activatedCode;
+
+    @Column(name = "activated", nullable = false)
+    private Boolean activated;
 }
