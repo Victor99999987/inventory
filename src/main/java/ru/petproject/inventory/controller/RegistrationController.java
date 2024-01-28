@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.petproject.inventory.common.Utility;
 import ru.petproject.inventory.dto.RegistrationDto;
 import ru.petproject.inventory.dto.RegistrationNewDto;
 import ru.petproject.inventory.service.RegistrationService;
@@ -20,11 +21,12 @@ import javax.validation.constraints.Positive;
 @RequiredArgsConstructor
 public class RegistrationController {
     private final RegistrationService registrationService;
+    private final HttpServletRequest request;
 
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     RegistrationDto postRegistration(@Valid @RequestBody RegistrationNewDto registrationNewDto) {
-        log.info("Получен запрос на эндпоинт POST /registration");
+        Utility.logEndpoint(log, request);
         return registrationService.postRegistration(registrationNewDto);
     }
 
@@ -32,7 +34,7 @@ public class RegistrationController {
     @ResponseStatus(HttpStatus.OK)
     RegistrationDto patchActivate(@PathVariable @Positive Long userId,
                                   @RequestParam @NotNull String code) {
-        log.info("Получен запрос на эндпоинт PATCH /activate/{}", code);
+        Utility.logEndpoint(log, request);
         return registrationService.patchActivate(userId, code);
     }
 }

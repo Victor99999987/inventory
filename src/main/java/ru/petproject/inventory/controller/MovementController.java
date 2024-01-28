@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.petproject.inventory.common.Utility;
 import ru.petproject.inventory.dto.MovementDto;
 import ru.petproject.inventory.dto.MovementNewDto;
 import ru.petproject.inventory.service.MovementService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -19,15 +21,16 @@ import static ru.petproject.inventory.common.Const.REQUEST_HEADER_USER_ID;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/movements")
+@RequestMapping("/movement")
 public class MovementController {
     private final MovementService movementService;
+    private final HttpServletRequest request;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     MovementDto postMovement(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                              @Valid @RequestBody MovementNewDto movementNewDto) {
-        log.info("Получен запрос на эндпоинт POST /movements");
+        Utility.logEndpoint(log, request);
         return movementService.postMovement(userId, movementNewDto);
     }
 
@@ -36,7 +39,7 @@ public class MovementController {
     MovementDto patchMovement(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                               @PathVariable @Positive Long id,
                               @Valid @RequestBody MovementDto movementDto) {
-        log.info("Получен запрос на эндпоинт PATCH /movements/{}", id);
+        Utility.logEndpoint(log, request);
         return null;
     }
 
@@ -44,13 +47,13 @@ public class MovementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteMovement(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                         @PathVariable @Positive Long id) {
-        log.info("Получен запрос на эндпоинт DELETE /movements/{}", id);
+        Utility.logEndpoint(log, request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     List<MovementDto> getMovements(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
-        log.info("Получен запрос на эндпоинт GET /movements");
+        Utility.logEndpoint(log, request);
         return null;
     }
 }

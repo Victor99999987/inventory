@@ -83,6 +83,7 @@ public class CategoryService {
                 .orElseThrow(() -> new NotFoundException(String.format("Категория с id %d не найдена", categoryId)));
     }
 
+
     private void checkExistsCategory(Organization organization, String name) {
         if (categoryRepository.existsByOrganizationAndName(organization, name)) {
             throw new AlreadyExistsException(String.format("Категория с name %s уже существует", name));
