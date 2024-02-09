@@ -9,6 +9,7 @@ import ru.petproject.inventory.common.Utility;
 import ru.petproject.inventory.dto.UserDto;
 import ru.petproject.inventory.dto.UserNewDto;
 import ru.petproject.inventory.dto.UserUpdateDto;
+import ru.petproject.inventory.repository.UserRepository;
 import ru.petproject.inventory.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,4 +59,13 @@ public class UserController {
         Utility.logEndpoint(log, request);
         return userService.getUsers(userId);
     }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    UserDto getUser(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                    @PathVariable @Positive Long id) {
+        Utility.logEndpoint(log, request);
+        return userService.getUser(userId, id);
+    }
+
 }

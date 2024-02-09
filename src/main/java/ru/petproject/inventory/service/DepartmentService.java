@@ -3,18 +3,19 @@ package ru.petproject.inventory.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.petproject.inventory.dto.CategoryDto;
 import ru.petproject.inventory.dto.DepartmentDto;
 import ru.petproject.inventory.dto.DepartmentNewDto;
 import ru.petproject.inventory.dto.DepartmentUpdateDto;
 import ru.petproject.inventory.exception.AccessDeniedException;
 import ru.petproject.inventory.exception.AlreadyExistsException;
+import ru.petproject.inventory.exception.ExistsRelatedException;
 import ru.petproject.inventory.exception.NotFoundException;
+import ru.petproject.inventory.mapper.CategoryMapper;
 import ru.petproject.inventory.mapper.DepartmentMapper;
-import ru.petproject.inventory.model.Department;
-import ru.petproject.inventory.model.Organization;
-import ru.petproject.inventory.model.Role;
-import ru.petproject.inventory.model.User;
+import ru.petproject.inventory.model.*;
 import ru.petproject.inventory.repository.DepartmentRepository;
+import ru.petproject.inventory.repository.ItemRepository;
 import ru.petproject.inventory.repository.UserRepository;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Transactional
     public DepartmentDto postDepartment(Long userId, DepartmentNewDto departmentNewDto) {
@@ -63,7 +65,7 @@ public class DepartmentService {
         User user = getUser(userId);
         checkAccess(user);
         Department department = getDepartment(user.getOrganization(), id);
-        //нужно глянуть, может есть связанное оборудование
+        checkExistItem(department);
         departmentRepository.delete(department);
     }
 
@@ -73,6 +75,13 @@ public class DepartmentService {
         return departmentRepository.findAllByOrganization(user.getOrganization()).stream()
                 .map(DepartmentMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public DepartmentDto getDepartment(Long userId, Long id) {
+        User user = getUser(userId);
+        Department department = getDepartment(user.getOrganization(), id);
+        return DepartmentMapper.toDto(department);
     }
 
     private User getUser(Long userId) {
@@ -91,15 +100,15 @@ public class DepartmentService {
                 .orElseThrow(() -> new NotFoundException(String.format("Подразделение с id %d не найдено", departmentId)));
     }
 
-    private void checkExistsDepartment(Organization organization, String name){
-        if(departmentRepository.existsByOrganizationAndName(organization, name)) {
-            throw  new AlreadyExistsException(String.format("Подразделение с name %s уже существует", name));
+    private void checkExistsDepartment(Organization organization, String name) {
+        if (departmentRepository.existsByOrganizationAndName(organization, name)) {
+            throw new AlreadyExistsException(String.format("Подразделение с name %s уже существует", name));
         }
     }
 
-    private void checkExistsDepartment(Organization organization, String name, Long notThisId){
-        if(departmentRepository.existsByOrganizationAndNameAndIdNot(organization, name, notThisId)) {
-            throw  new AlreadyExistsException(String.format("Подразделение c name %s уже существует", name));
+    private void checkExistsDepartment(Organization organization, String name, Long notThisId) {
+        if (departmentRepository.existsByOrganizationAndNameAndIdNot(organization, name, notThisId)) {
+            throw new AlreadyExistsException(String.format("Подразделение c name %s уже существует", name));
         }
     }
 
@@ -108,4 +117,11 @@ public class DepartmentService {
             throw new IllegalArgumentException("Поле " + name + " не может состоять из пробелов");
         }
     }
+
+    private void checkExistItem(Department department) {
+        if (itemRepository.existsByDepartment(department)) {
+            throw new ExistsRelatedException(String.format("В Подразделении %s есть оборудование", department.getName()));
+        }
+    }
+
 }

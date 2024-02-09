@@ -22,10 +22,10 @@ public class MovementDto {
     private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_DATE)
     private LocalDateTime movementDate;
-    private UserDto fromOwner;
-    private UserDto toOwner;
-    private UserDto fromUser;
-    private UserDto toUser;
+    private UserShortDto fromOwner;
+    private UserShortDto toOwner;
+    private UserShortDto fromUser;
+    private UserShortDto toUser;
     private DepartmentDto fromDepartment;
     private DepartmentDto toDepartment;
     private String description;

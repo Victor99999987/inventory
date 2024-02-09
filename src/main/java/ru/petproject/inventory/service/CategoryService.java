@@ -8,6 +8,7 @@ import ru.petproject.inventory.dto.CategoryNewDto;
 import ru.petproject.inventory.dto.CategoryUpdateDto;
 import ru.petproject.inventory.exception.AccessDeniedException;
 import ru.petproject.inventory.exception.AlreadyExistsException;
+import ru.petproject.inventory.exception.ExistsRelatedException;
 import ru.petproject.inventory.exception.NotFoundException;
 import ru.petproject.inventory.mapper.CategoryMapper;
 import ru.petproject.inventory.model.Category;
@@ -15,6 +16,7 @@ import ru.petproject.inventory.model.Organization;
 import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
 import ru.petproject.inventory.repository.CategoryRepository;
+import ru.petproject.inventory.repository.ItemRepository;
 import ru.petproject.inventory.repository.UserRepository;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Transactional
     public CategoryDto postCategory(Long userId, CategoryNewDto categoryNewDto) {
@@ -55,7 +58,7 @@ public class CategoryService {
         User user = getUser(userId);
         checkAccess(user);
         Category category = getCategory(user.getOrganization(), id);
-        //нужно глянуть, может есть оборудование в этой категории
+        checkExistItem(category);
         categoryRepository.delete(category);
     }
 
@@ -65,6 +68,13 @@ public class CategoryService {
         return categoryRepository.findAllByOrganization(user.getOrganization()).stream()
                 .map(CategoryMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CategoryDto getCategory(Long userId, Long id) {
+        User user = getUser(userId);
+        Category category = getCategory(user.getOrganization(), id);
+        return CategoryMapper.toDto(category);
     }
 
     private User getUser(Long userId) {
@@ -83,7 +93,6 @@ public class CategoryService {
                 .orElseThrow(() -> new NotFoundException(String.format("Категория с id %d не найдена", categoryId)));
     }
 
-
     private void checkExistsCategory(Organization organization, String name) {
         if (categoryRepository.existsByOrganizationAndName(organization, name)) {
             throw new AlreadyExistsException(String.format("Категория с name %s уже существует", name));
@@ -95,4 +104,11 @@ public class CategoryService {
             throw new AlreadyExistsException(String.format("Категория с name %s уже существует", name));
         }
     }
+
+    private void checkExistItem(Category category) {
+        if (itemRepository.existsByCategory(category)) {
+            throw new ExistsRelatedException(String.format("В категории %s есть оборудование", category.getName()));
+        }
+    }
+
 }

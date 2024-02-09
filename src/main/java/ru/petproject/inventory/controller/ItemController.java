@@ -14,6 +14,7 @@ import ru.petproject.inventory.service.ItemService;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 import static ru.petproject.inventory.common.Const.REQUEST_HEADER_USER_ID;
@@ -54,8 +55,26 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<ItemDto> getItems(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId) {
+    List<ItemDto> getItems(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                           @RequestParam(required = false) String name,
+                           @RequestParam(required = false) Long categoryId,
+                           @RequestParam(required = false) Boolean serviceable,
+                           @RequestParam(required = false) String invNumber,
+                           @RequestParam(required = false) Long clientId,
+                           @RequestParam(required = false) Long ownerId,
+                           @RequestParam(required = false) Long departmentId,
+                           @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                           @RequestParam(defaultValue = "100") @Positive int size) {
         Utility.logEndpoint(log, request);
-        return null;
+        return itemService.getItems(userId, name, categoryId, serviceable, invNumber, clientId, ownerId, departmentId, from, size);
     }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ItemDto getItem(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                    @PathVariable @Positive Long id) {
+        Utility.logEndpoint(log, request);
+        return itemService.getItem(userId, id);
+    }
+
 }

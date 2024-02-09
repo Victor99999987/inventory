@@ -1,6 +1,7 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
+import ru.petproject.inventory.common.ValidationMessage;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,11 +14,11 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryUpdateDto {
-    @NotNull(message = "поле id должно быть указано")
-    @Positive(message = "поле id должно быть положительным")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long id;
 
-    @NotBlank(message = "поле name должно быть указано и не должно состоять из пробелов")
-    @Size(min = 1, max = 100, message = "поле name должно содержать от 1 до 100 символов")
+    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String name;
 }

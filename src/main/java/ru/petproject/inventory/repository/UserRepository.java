@@ -2,6 +2,7 @@ package ru.petproject.inventory.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.petproject.inventory.model.Organization;
+import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByOrganizationAndId(Organization organization, Long userId);
     List<User> findAllByOrganization(Organization organization);
     List<User> findByOrganizationAndIdIn(Organization organization, List<Long> usersId);
+    boolean existsByOrganizationAndRoleAndIdNot(Organization organization, Role role, Long notThisId);
 }

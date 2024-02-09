@@ -1,8 +1,12 @@
 package ru.petproject.inventory.service;
 
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.petproject.inventory.dto.ItemDto;
 import ru.petproject.inventory.dto.ItemNewDto;
 import ru.petproject.inventory.dto.ItemUpdateDto;
@@ -12,10 +16,14 @@ import ru.petproject.inventory.exception.NotFoundException;
 import ru.petproject.inventory.mapper.ItemMapper;
 import ru.petproject.inventory.model.*;
 import ru.petproject.inventory.repository.CategoryRepository;
+import ru.petproject.inventory.repository.DepartmentRepository;
 import ru.petproject.inventory.repository.ItemRepository;
 import ru.petproject.inventory.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -23,16 +31,23 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final DepartmentRepository departmentRepository;
 
     @Transactional
     public ItemDto postItem(Long userId, ItemNewDto itemNewDto) {
         User user = getUser(userId);
         checkAccess(user);
         Category category = getCategory(user.getOrganization(), itemNewDto.getCategoryId());
+        User userFact = getUser(user.getOrganization(), itemNewDto.getUserId());
+        User owner = getUser(user.getOrganization(), itemNewDto.getOwnerId());
+        Department department = getDepartment(user.getOrganization(), itemNewDto.getDepartmentId());
         Item item = Item.builder()
                 .name(itemNewDto.getName())
                 .description(itemNewDto.getDescription())
                 .category(category)
+                .user(userFact)
+                .owner(owner)
+                .department(department)
                 .serviceable(itemNewDto.getServiceable())
                 .created(LocalDateTime.now())
                 .build();
@@ -42,7 +57,6 @@ public class ItemService {
             item.setInvNumber(itemNewDto.getInvNumber());
         }
         if (itemNewDto.getFinished() != null) {
-            checkPast("finished", itemNewDto.getFinished());
             item.setFinished(itemNewDto.getFinished());
         }
         item = itemRepository.save(item);
@@ -54,28 +68,28 @@ public class ItemService {
         User user = getUser(userId);
         checkAccess(user);
         Item item = getItem(user.getOrganization(), id);
-        if(itemUpdateDto.getName()!=null){
+        if (itemUpdateDto.getName() != null) {
             checkBlank("name", itemUpdateDto.getName());
             item.setName(itemUpdateDto.getName());
         }
-        if(itemUpdateDto.getDescription()!=null){
+        if (itemUpdateDto.getDescription() != null) {
             checkBlank("description", itemUpdateDto.getDescription());
             item.setDescription(itemUpdateDto.getDescription());
         }
-        if(itemUpdateDto.getCategoryId()!=null){
+        if (itemUpdateDto.getCategoryId() != null) {
             Category category = getCategory(user.getOrganization(), itemUpdateDto.getCategoryId());
             item.setCategory(category);
         }
-        if(itemUpdateDto.getServiceable()!=null){
+        if (itemUpdateDto.getServiceable() != null) {
             item.setServiceable(itemUpdateDto.getServiceable());
         }
-        if(itemUpdateDto.getInvNumber()!=null){
+        if (itemUpdateDto.getInvNumber() != null) {
             checkBlank("invNumber", itemUpdateDto.getInvNumber());
             checkExistsItem(user.getOrganization(), itemUpdateDto.getInvNumber(), id);
             item.setInvNumber(itemUpdateDto.getInvNumber());
         }
         if (itemUpdateDto.getFinished() != null) {
-            checkPast("finished", itemUpdateDto.getFinished());
+            checkFinishedIsBeforeCreated(itemUpdateDto.getFinished(), item.getCreated());
             item.setFinished(itemUpdateDto.getFinished());
         }
         item = itemRepository.save(item);
@@ -88,13 +102,63 @@ public class ItemService {
         checkAccess(user);
         Item item = getItem(user.getOrganization(), id);
         //нужно глянуть связанные перемещения
+        //так вроде и так удаляться лишние связи из таблицы items_movements
+        //может только косяк быть с перемещениями в которых нет ничего
         itemRepository.delete(item);
     }
 
+    @Transactional
+    public List<ItemDto> getItems(Long userId, String name, Long categoryId, Boolean serviceable, String invNumber,
+                                  Long clientId, Long ownerId, Long departmentId, int from, int size) {
+        User user = getUser(userId);
+        QItem qItem = QItem.item;
+        Predicate predicate = qItem.category.organization.eq(user.getOrganization());
+        if (name != null) {
+            predicate = qItem.name.containsIgnoreCase(name).and(predicate);
+        }
+        if (categoryId != null) {
+            Category category = getCategory(user.getOrganization(), categoryId);
+            predicate = qItem.category.eq(category).and(predicate);
+        }
+        if (serviceable != null) {
+            predicate = qItem.serviceable.eq(serviceable).and(predicate);
+        }
+        if (invNumber != null) {
+            predicate = qItem.invNumber.containsIgnoreCase(invNumber).and(predicate);
+        }
+        if (clientId != null) {
+            User client = getUser(user.getOrganization(), clientId);
+            predicate = qItem.user.eq(client).and(predicate);
+        }
+        if (ownerId != null) {
+            User owner = getUser(user.getOrganization(), ownerId);
+            predicate = qItem.owner.eq(owner).and(predicate);
+        }
+        if (departmentId != null) {
+            Department department = getDepartment(user.getOrganization(), departmentId);
+            predicate = qItem.department.eq(department).and(predicate);
+        }
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        List<Item> items = itemRepository.findAll(predicate, pageable).getContent();
+        return items.stream()
+                .map(ItemMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
+    @Transactional
+    public ItemDto getItem(Long userId, Long id) {
+        User user = getUser(userId);
+        Item item = getItem(user.getOrganization(), id);
+        return ItemMapper.toDto(item);
+    }
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
+    }
+
+    private User getUser(Organization organization, Long userId) {
+        return userRepository.findByOrganizationAndId(organization, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
     }
 
@@ -115,9 +179,9 @@ public class ItemService {
         }
     }
 
-    private void checkPast(String name, LocalDateTime value) {
-        if (value.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Поле " + name + " не может быть в прошлом");
+    private void checkFinishedIsBeforeCreated(LocalDateTime finished, LocalDateTime created) {
+        if (finished.isBefore(created)) {
+            throw new IllegalArgumentException("Дата окончания эксплуатации не может быть раньше начала");
         }
     }
 
@@ -137,4 +201,10 @@ public class ItemService {
         return itemRepository.findByOrganizationAndId(organization, itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Оборудование с id %d не найдено", itemId)));
     }
+
+    private Department getDepartment(Organization organization, Long departmentId) {
+        return departmentRepository.findByOrganizationAndId(organization, departmentId)
+                .orElseThrow(() -> new NotFoundException(String.format("Подразделение с id %d не найдено", departmentId)));
+    }
+
 }

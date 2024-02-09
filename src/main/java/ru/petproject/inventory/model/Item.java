@@ -31,7 +31,7 @@ public class Item {
     @Column(name = "serviceable", nullable = false)
     private boolean serviceable;
 
-    @Column(name = "inv_number", length = 50)
+    @Column(name = "inv_number", length = 100)
     private String invNumber;
 
     @Column(name = "created", nullable = false)
@@ -39,4 +39,16 @@ public class Item {
 
     @Column(name = "finished")
     private LocalDateTime finished;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
 }

@@ -2,11 +2,9 @@ package ru.petproject.inventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import ru.petproject.inventory.common.ValidationMessage;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 import static ru.petproject.inventory.common.Const.PATTERN_DATE;
@@ -17,24 +15,37 @@ import static ru.petproject.inventory.common.Const.PATTERN_DATE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemNewDto {
-    @NotBlank(message = "поле name должно быть указано и не должно состоять из пробелов")
-    @Size(min = 1, max = 100, message = "поле name должно содержать от 1 до 100 символов")
+    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String name;
 
-    @NotBlank(message = "поле description должно быть указано и не должно состоять из пробелов")
-    @Size(min = 1, max = 1000, message = "поле description должно содержать от 1 до 1000 символов")
+    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 1000, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_1000)
     private String description;
 
-    @NotNull(message = "поле categoryId должно быть указано")
-    @Positive(message = "поле categoryId должно быть положительным")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long categoryId;
 
-    @NotNull(message = "поле serviceable должно быть указано")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    private Long userId;
+
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    private Long ownerId;
+
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    private Long departmentId;
+
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
     private Boolean serviceable;
 
-    @Size(min = 1, max = 50, message = "поле invNumber должно содержать от 1 до 50 символов")
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String invNumber;
 
+    @FutureOrPresent(message = ValidationMessage.DATE_MUST_BE_FUTURE_OR_PRESENT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_DATE)
     private LocalDateTime finished;
 }

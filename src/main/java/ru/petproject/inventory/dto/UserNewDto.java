@@ -1,6 +1,7 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
+import ru.petproject.inventory.common.ValidationMessage;
 import ru.petproject.inventory.model.Role;
 
 import javax.validation.constraints.*;
@@ -11,22 +12,22 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserNewDto {
-    @NotBlank(message = "поле name должно быть указано и не должно состоять из пробелов")
-    @Size(min = 1, max = 100, message = "поле name должно содержать от 1 до 100 символов")
+    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String name;
 
-    @NotNull(message = "поле reporting должно быть указано")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
     private Boolean reporting;
 
-    @NotBlank(message = "поле position должно быть указано и не должно состоять из пробелов")
-    @Size(min = 1, max = 100, message = "поле position должно содержать от 1 до 50 символов")
+    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String position;
 
-    @NotEmpty(message = "поле email должно быть указано")
-    @Email(message = "неверный формат email")
-    @Size(min = 6, max = 50, message = "поле email должно быть от 6 до 50 символов")
+    @NotEmpty(message = ValidationMessage.FIELD_MUST_BE_NOT_EMPTY)
+    @Email(message = ValidationMessage.INVALID_EMAIL)
+    @Size(min = 6, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_6_TO_100)
     private String email;
 
-    @NotNull(message = "поле role должно быть указано")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
     private Role role;
 }

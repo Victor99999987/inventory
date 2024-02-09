@@ -8,11 +8,13 @@ import ru.petproject.inventory.dto.UserNewDto;
 import ru.petproject.inventory.dto.UserUpdateDto;
 import ru.petproject.inventory.exception.AccessDeniedException;
 import ru.petproject.inventory.exception.AlreadyExistsException;
+import ru.petproject.inventory.exception.ExistsRelatedException;
 import ru.petproject.inventory.exception.NotFoundException;
 import ru.petproject.inventory.mapper.UserMapper;
 import ru.petproject.inventory.model.Organization;
 import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
+import ru.petproject.inventory.repository.ItemRepository;
 import ru.petproject.inventory.repository.UserRepository;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Transactional
     public UserDto postUser(Long userId, UserNewDto userNewDto) {
@@ -54,6 +57,9 @@ public class UserService {
             user.setName(userUpdateDto.getName());
         }
         if (userUpdateDto.getReporting() != null) {
+            if (!userUpdateDto.getReporting() && patchUser.isReporting()) {
+                checkExistItemByOwner(patchUser);
+            }
             user.setReporting(userUpdateDto.getReporting());
         }
         if (userUpdateDto.getPosition() != null) {
@@ -66,6 +72,9 @@ public class UserService {
             user.setEmail(userUpdateDto.getEmail());
         }
         if (userUpdateDto.getRole() != null) {
+            if (userUpdateDto.getRole() == Role.CLIENT && patchUser.getRole() == Role.ADMIN) {
+                checkExistAdmin(patchUser);
+            }
             user.setRole(userUpdateDto.getRole());
         }
         patchUser = userRepository.save(patchUser);
@@ -77,7 +86,7 @@ public class UserService {
         User user = getUser(userId);
         checkAccess(user);
         User deleteUser = getUser(user.getOrganization(), id);
-        //нужно глянуть, может есть связанное оборудование
+        checkExistItemByOwnerOrUser(deleteUser);
         userRepository.delete(deleteUser);
     }
 
@@ -87,6 +96,13 @@ public class UserService {
         return userRepository.findAllByOrganization(user.getOrganization()).stream()
                 .map(UserMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserDto getUser(Long userId, Long id) {
+        User user = getUser(userId);
+        User foundUser = getUser(user.getOrganization(), id);
+        return UserMapper.toDto(foundUser);
     }
 
     private User getUser(Long userId) {
@@ -147,4 +163,23 @@ public class UserService {
             throw new IllegalArgumentException("Поле " + name + " не может состоять из пробелов");
         }
     }
+
+    private void checkExistItemByOwner(User owner) {
+        if (itemRepository.existsByOwner(owner)) {
+            throw new ExistsRelatedException(String.format("У пользователя %s есть оборудование", owner.getName()));
+        }
+    }
+
+    private void checkExistItemByOwnerOrUser(User user) {
+        if (itemRepository.existsByOwnerOrUser(user, user)) {
+            throw new ExistsRelatedException(String.format("У пользователя %s есть оборудование", user.getName()));
+        }
+    }
+
+    private void checkExistAdmin(User owner) {
+        if (!userRepository.existsByOrganizationAndRoleAndIdNot(owner.getOrganization(), Role.ADMIN, owner.getId())) {
+            throw new AccessDeniedException(String.format("Пользователь %s единственный админ организации", owner.getName()));
+        }
+    }
+
 }

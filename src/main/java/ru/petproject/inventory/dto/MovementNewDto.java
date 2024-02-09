@@ -1,6 +1,7 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
+import ru.petproject.inventory.common.ValidationMessage;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -13,33 +14,35 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovementNewDto {
-    @NotNull(message = "поле fromOwnerId должно быть указано")
-    @Positive(message = "поле fromOwnerId должно быть положительным")
+    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long fromOwnerId;
 
-    @NotNull(message = "поле toOwnerId должно быть указано")
-    @Positive(message = "поле toOwnerId должно быть положительным")
+    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long toOwnerId;
 
-    @NotNull(message = "поле fromUserId должно быть указано")
-    @Positive(message = "поле fromUserId должно быть положительным")
+    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long fromUserId;
 
-    @NotNull(message = "поле toUserId должно быть указано")
-    @Positive(message = "поле toUserId должно быть положительным")
+    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long toUserId;
 
-    @NotNull(message = "поле fromDepartmentId должно быть указано")
-    @Positive(message = "поле fromDepartmentId должно быть положительным")
+    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long fromDepartmentId;
 
-    @NotNull(message = "поле toDepartmentId должно быть указано")
-    @Positive(message = "поле toDepartmentId должно быть положительным")
+    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long toDepartmentId;
 
-    @Size(min = 1, max = 1000, message = "поле description должно содержать от 1 до 1000 символов")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Size(min = 1, max = 1000, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_1000)
     private String description;
 
-    @NotNull(message = "поле itemsId должно быть указано")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Size(min = 1, message = ValidationMessage.SET_MIN_SIZE_MUST_BE_1)
     private Set<Long> itemsId;
 }

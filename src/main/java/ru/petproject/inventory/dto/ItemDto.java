@@ -20,6 +20,9 @@ public class ItemDto {
     private CategoryDto category;
     private boolean serviceable;
     private String invNumber;
+    private UserShortDto user;
+    private UserShortDto owner;
+    private DepartmentDto department;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_DATE)
     private LocalDateTime created;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_DATE)

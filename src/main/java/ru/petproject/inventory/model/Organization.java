@@ -24,5 +24,5 @@ public class Organization {
     private String activatedCode;
 
     @Column(name = "activated", nullable = false)
-    private Boolean activated;
+    private boolean activated;
 }

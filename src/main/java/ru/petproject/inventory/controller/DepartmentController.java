@@ -46,7 +46,7 @@ public class DepartmentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void patchDepartment(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+    void deleteDepartment(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                          @PathVariable @Positive Long id) {
         Utility.logEndpoint(log, request);
         departmentService.deleteDepartment(userId, id);
@@ -58,4 +58,13 @@ public class DepartmentController {
         Utility.logEndpoint(log, request);
         return departmentService.getDepartments(userId);
     }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    DepartmentDto getDepartment(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                                @PathVariable @Positive Long id) {
+        Utility.logEndpoint(log, request);
+        return departmentService.getDepartment(userId, id);
+    }
+
 }

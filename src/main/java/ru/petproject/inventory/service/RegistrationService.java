@@ -47,7 +47,7 @@ public class RegistrationService {
                 .build();
         user = userRepository.save(user);
         emailService.sendSimpleEmail(registrationNewDto.getEmail(),
-                "Подтверждение регистриции",
+                "Подтверждение регистрации",
                 "Для подтверждения регистрации перейдите по ссылке " +
                         SERVER_HOST + "/activate/" + user.getId() + "?code=" + organization.getActivatedCode());
         return RegistrationMapper.toDto(user);
@@ -63,7 +63,7 @@ public class RegistrationService {
         organization.setActivated(true);
         organization = organizationRepository.save(organization);
         emailService.sendSimpleEmail(user.getEmail(),
-                "Данные для входа в систему",
+                "Данные для входа в систему ",
                 "организация " + organization.getName() +
                         "логин " + user.getEmail() +
                         "пароль " + user.getPassword());
@@ -74,6 +74,11 @@ public class RegistrationService {
         if (userRepository.existsByEmail(email)) {
             throw new AlreadyExistsException(String.format("Пользователь с email %s уже существует", email));
         }
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
     }
 
     private String generatePassword() {
@@ -87,10 +92,5 @@ public class RegistrationService {
             password.append(alphabet.charAt(index));
         }
         return password.toString();
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
     }
 }

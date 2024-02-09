@@ -2,6 +2,7 @@ package ru.petproject.inventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import ru.petproject.inventory.common.ValidationMessage;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -16,21 +17,22 @@ import static ru.petproject.inventory.common.Const.PATTERN_DATE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemUpdateDto {
-    @NotNull(message = "поле id должно быть указано")
-    @Positive(message = "поле id должно быть положительным")
+    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long id;
 
-    @Size(min = 1, max = 100, message = "поле name должно содержать от 1 до 100 символов")
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String name;
 
-    @Size(min = 1, max = 1000, message = "поле description должно содержать от 1 до 1000 символов")
+    @Size(min = 1, max = 1000, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_1000)
     private String description;
 
+    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
     private Long categoryId;
 
     private Boolean serviceable;
 
-    @Size(min = 1, max = 50, message = "поле invNumber должно содержать от 1 до 50 символов")
+    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
     private String invNumber;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_DATE)

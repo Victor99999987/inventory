@@ -58,4 +58,12 @@ public class CategoryController {
         return categoryService.getCategories(userId);
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    CategoryDto getCategory(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
+                            @PathVariable @Positive Long id) {
+        Utility.logEndpoint(log, request);
+        return categoryService.getCategory(userId, id);
+    }
+
 }
