@@ -43,8 +43,8 @@ public class MovementController {
     List<MovementDto> getMovements(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
                                    @RequestParam(required = false) @Positive Long fromOwnerId,
                                    @RequestParam(required = false) @Positive Long toOwnerId,
-                                   @RequestParam(required = false) @Positive Long fromUserId,
-                                   @RequestParam(required = false) @Positive Long toUserId,
+                                   @RequestParam(required = false) @Positive Long fromClientId,
+                                   @RequestParam(required = false) @Positive Long toClientId,
                                    @RequestParam(required = false) @Positive Long fromDepartmentId,
                                    @RequestParam(required = false) @Positive Long toDepartmentId,
                                    @RequestParam(required = false) @DateTimeFormat(pattern = PATTERN_DATE) LocalDateTime fromDate,
@@ -52,7 +52,7 @@ public class MovementController {
                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                    @RequestParam(defaultValue = "100") @Positive int size) {
         Utility.logEndpoint(log, request);
-        return movementService.getMovements(userId, fromOwnerId, toOwnerId, fromUserId, toUserId,
+        return movementService.getMovements(userId, fromOwnerId, toOwnerId, fromClientId, toClientId,
                 fromDepartmentId, toDepartmentId, fromDate, toDate, from, size);
     }
 

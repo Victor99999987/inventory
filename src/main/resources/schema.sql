@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS items (
   inv_number        VARCHAR(100),
   created           TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   finished          TIMESTAMP WITHOUT TIME ZONE,
-  user_id           BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  client_id         BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   owner_id          BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   department_id     BIGINT NOT NULL REFERENCES departments(id) ON DELETE CASCADE
 );
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS movements (
   movement_date         TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   from_owner_id         BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   to_owner_id           BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  from_user_id          BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  to_user_id            BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  from_client_id        BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  to_client_id          BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   from_department_id    BIGINT NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
   to_department_id      BIGINT NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
   description           VARCHAR(1000)

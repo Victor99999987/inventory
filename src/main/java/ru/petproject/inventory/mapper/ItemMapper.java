@@ -12,7 +12,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .category(CategoryMapper.toDto(item.getCategory()))
-                .user(UserMapper.toShortDto(item.getUser()))
+                .client(UserMapper.toShortDto(item.getClient()))
                 .owner(UserMapper.toShortDto(item.getOwner()))
                 .department(DepartmentMapper.toDto(item.getDepartment()))
                 .serviceable(item.isServiceable())

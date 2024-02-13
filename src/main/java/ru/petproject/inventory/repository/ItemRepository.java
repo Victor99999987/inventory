@@ -9,35 +9,12 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, QuerydslPredicateExecutor<Item> {
-    @Query("SELECT 1 FROM Item AS it " +
-            "INNER JOIN Category AS ct ON it.category.id=ct.id " +
-            "INNER JOIN Organization AS og ON ct.organization.id=og.id " +
-            "WHERE og=:organization AND it.invNumber=:invNumber ")
-    boolean existsByOrganizationAndInvNumber(Organization organization, String invNumber);
-
-    @Query("SELECT it FROM Item AS it " +
-            "INNER JOIN Category AS ct ON it.category.id=ct.id " +
-            "INNER JOIN Organization AS og ON ct.organization.id=og.id " +
-            "WHERE og=:organization AND it.id=:itemId ")
-    Optional<Item> findByOrganizationAndId(Organization organization, Long itemId);
-
-    @Query("SELECT 1 FROM Item AS it " +
-            "INNER JOIN Category AS ct ON it.category.id=ct.id " +
-            "INNER JOIN Organization AS og ON ct.organization.id=og.id " +
-            "WHERE og=:organization AND it.invNumber=:invNumber AND it.id<>:notThisId ")
-    boolean existsByOrganizationAndInvNumberAndIdNot(Organization organization, String invNumber, Long notThisId);
-
-    @Query("SELECT it FROM Item AS it " +
-            "INNER JOIN Category AS ct ON it.category.id=ct.id " +
-            "INNER JOIN Organization AS og ON ct.organization.id=og.id " +
-            "WHERE og=:organization AND it.id IN (:itemsId) ")
-    Set<Item> findAllByOrganizationAndIdIn(Organization organization, Set<Long> itemsId);
-
+    boolean existsByCategory_OrganizationAndInvNumber(Organization organization, String invNumber);
+    Optional<Item> findByCategory_OrganizationAndId(Organization organization, Long id);
+    boolean existsByCategory_OrganizationAndInvNumberAndIdNot(Organization organization, String invNumber, Long exceptThisId);
+    Set<Item> findAllByCategory_OrganizationAndIdIn(Organization organization, Set<Long> ids);
     boolean existsByCategory(Category category);
-
     boolean existsByDepartment(Department department);
-
     boolean existsByOwner(User owner);
-
-    boolean existsByOwnerOrUser(User owner, User user);
+    boolean existsByOwnerOrClient(User owner, User client);
 }

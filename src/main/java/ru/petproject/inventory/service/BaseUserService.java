@@ -2,150 +2,93 @@ package ru.petproject.inventory.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.petproject.inventory.dto.UserDto;
-import ru.petproject.inventory.dto.UserNewDto;
-import ru.petproject.inventory.dto.UserUpdateDto;
 import ru.petproject.inventory.exception.AccessDeniedException;
 import ru.petproject.inventory.exception.AlreadyExistsException;
-import ru.petproject.inventory.exception.ExistsRelatedException;
 import ru.petproject.inventory.exception.NotFoundException;
-import ru.petproject.inventory.mapper.UserMapper;
 import ru.petproject.inventory.model.Organization;
 import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
-import ru.petproject.inventory.repository.ItemRepository;
 import ru.petproject.inventory.repository.UserRepository;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class BaseUserService {
+    private static final String USER_NOT_FOUND = "Пользователь с id %d не найден";
+    private static final String USER_NOT_ADMIN = "Пользователь с id %d не является администратором";
+    private static final String EMAIL_ALREADY_EXISTS = "Пользователь с email %s уже существует";
+    private static final String NAME_ALREADY_EXISTS = "Пользователь %s уже существует";
+    private static final String SINGLE_ADMIN = "Пользователь %s единственный администратор";
+    private static final String USER_NOT_REPORTING = "Пользователь с id %d не является подотчетным лицом";
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
 
-    @Transactional
-    public UserDto postUser(Long userId, UserNewDto userNewDto) {
-        User user = getUser(userId);
-        checkAccess(user);
-        checkExistsUser(userNewDto.getEmail());
-        checkExistsUser(user.getOrganization(), userNewDto.getName());
-        User newUser = User.builder()
-                .name(userNewDto.getName())
-                .reporting(userNewDto.getReporting())
-                .position(userNewDto.getPosition())
-                .email(userNewDto.getEmail())
-                .password(generatePassword())
-                .role(userNewDto.getRole())
-                .organization(user.getOrganization())
-                .build();
-        newUser = userRepository.save(newUser);
-        return UserMapper.toDto(newUser);
+    public User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND, id)));
     }
 
-    @Transactional
-    public UserDto patchUser(Long userId, Long id, UserUpdateDto userUpdateDto) {
-        User user = getUser(userId);
-        checkAccess(user);
-        User patchUser = getUser(user.getOrganization(), id);
-        if (userUpdateDto.getName() != null) {
-            checkBlank("name", userUpdateDto.getName());
-            checkExistsUser(user.getOrganization(), userUpdateDto.getName(), id);
-            user.setName(userUpdateDto.getName());
-        }
-        if (userUpdateDto.getReporting() != null) {
-            if (!userUpdateDto.getReporting() && patchUser.isReporting()) {
-                checkExistItemByOwner(patchUser);
-            }
-            user.setReporting(userUpdateDto.getReporting());
-        }
-        if (userUpdateDto.getPosition() != null) {
-            checkBlank("position", userUpdateDto.getPosition());
-            user.setPosition(userUpdateDto.getPosition());
-        }
-        if (userUpdateDto.getEmail() != null) {
-            checkBlank("email", userUpdateDto.getEmail());
-            checkExistsUser(userUpdateDto.getEmail(), id);
-            user.setEmail(userUpdateDto.getEmail());
-        }
-        if (userUpdateDto.getRole() != null) {
-            if (userUpdateDto.getRole() == Role.CLIENT && patchUser.getRole() == Role.ADMIN) {
-                checkExistAdmin(patchUser);
-            }
-            user.setRole(userUpdateDto.getRole());
-        }
-        patchUser = userRepository.save(patchUser);
-        return UserMapper.toDto(patchUser);
+    public User getUser(Organization organization, Long id) {
+        return userRepository.findByOrganizationAndId(organization, id)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND, id)));
     }
 
-    @Transactional
-    public void deleteUser(Long userId, Long id) {
-        User user = getUser(userId);
-        checkAccess(user);
-        User deleteUser = getUser(user.getOrganization(), id);
-        checkExistItemByOwnerOrUser(deleteUser);
-        userRepository.delete(deleteUser);
+    public List<User> getUsers(Organization organization){
+        return userRepository.findAllByOrganization(organization);
     }
 
-    @Transactional
-    public List<UserDto> getUsers(Long userId) {
-        User user = getUser(userId);
-        return userRepository.findAllByOrganization(user.getOrganization()).stream()
-                .map(UserMapper::toDto)
-                .collect(Collectors.toList());
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
-    @Transactional
-    public UserDto getUser(Long userId, Long id) {
-        User user = getUser(userId);
-        User foundUser = getUser(user.getOrganization(), id);
-        return UserMapper.toDto(foundUser);
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
-    }
-
-    private User getUser(Organization organization, Long userId) {
-        return userRepository.findByOrganizationAndId(organization, userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
-    }
-
-    private void checkAccess(User user) {
+    public void checkUserByAdmin(User user) {
         if (user.getRole() != Role.ADMIN) {
-            throw new AccessDeniedException(String.format("Пользователь с id %d не является администратором", user.getId()));
+            throw new AccessDeniedException(String.format(USER_NOT_ADMIN, user.getId()));
         }
     }
 
-    private void checkExistsUser(String email) {
+    public void checkUserByReporting(User user) {
+        if (!user.isReporting()) {
+            throw new IllegalArgumentException(String.format(USER_NOT_REPORTING, user.getId()));
+        }
+    }
+
+    public void checkExistsUser(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new AlreadyExistsException(String.format("Пользователь с email %s уже существует", email));
+            throw new AlreadyExistsException(String.format(EMAIL_ALREADY_EXISTS, email));
         }
     }
 
-    private void checkExistsUser(String email, Long notThisId) {
-        if (userRepository.existsByEmailAndIdNot(email, notThisId)) {
-            throw new AlreadyExistsException(String.format("Пользователь с email %s уже существует", email));
+    public void checkExistsUser(String email, Long exceptThisId) {
+        if (userRepository.existsByEmailAndIdNot(email, exceptThisId)) {
+            throw new AlreadyExistsException(String.format(EMAIL_ALREADY_EXISTS, email));
         }
     }
 
-    private void checkExistsUser(Organization organization, String name) {
+    public void checkExistsUser(Organization organization, String name) {
         if (userRepository.existsByOrganizationAndName(organization, name)) {
-            throw new AlreadyExistsException(String.format("Пользователь с name %s уже существует", name));
+            throw new AlreadyExistsException(String.format(NAME_ALREADY_EXISTS, name));
         }
     }
 
-    private void checkExistsUser(Organization organization, String name, Long notThisId) {
-        if (userRepository.existsByOrganizationAndNameAndIdNot(organization, name, notThisId)) {
-            throw new AlreadyExistsException(String.format("Пользователь с name %s уже существует", name));
+    public void checkExistsUser(Organization organization, String name, Long exceptThisId) {
+        if (userRepository.existsByOrganizationAndNameAndIdNot(organization, name, exceptThisId)) {
+            throw new AlreadyExistsException(String.format(NAME_ALREADY_EXISTS, name));
         }
     }
 
-    private String generatePassword() {
+    public void checkExistsAdmin(Organization organization, User exceptThisUser) {
+        if (!userRepository.existsByOrganizationAndRoleAndIdNot(organization, Role.ADMIN, exceptThisUser.getId())) {
+            throw new AccessDeniedException(String.format(SINGLE_ADMIN, exceptThisUser.getName()));
+        }
+    }
+
+    public String generatePassword() {
         String alphabet = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
         int length = 10;
         StringBuilder password = new StringBuilder();
@@ -157,29 +100,4 @@ public class UserService {
         }
         return password.toString();
     }
-
-    private void checkBlank(String name, String value) {
-        if (value.isBlank()) {
-            throw new IllegalArgumentException("Поле " + name + " не может состоять из пробелов");
-        }
-    }
-
-    private void checkExistItemByOwner(User owner) {
-        if (itemRepository.existsByOwner(owner)) {
-            throw new ExistsRelatedException(String.format("У пользователя %s есть оборудование", owner.getName()));
-        }
-    }
-
-    private void checkExistItemByOwnerOrUser(User user) {
-        if (itemRepository.existsByOwnerOrUser(user, user)) {
-            throw new ExistsRelatedException(String.format("У пользователя %s есть оборудование", user.getName()));
-        }
-    }
-
-    private void checkExistAdmin(User owner) {
-        if (!userRepository.existsByOrganizationAndRoleAndIdNot(owner.getOrganization(), Role.ADMIN, owner.getId())) {
-            throw new AccessDeniedException(String.format("Пользователь %s единственный админ организации", owner.getName()));
-        }
-    }
-
 }

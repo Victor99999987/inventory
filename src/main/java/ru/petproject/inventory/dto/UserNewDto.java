@@ -6,28 +6,30 @@ import ru.petproject.inventory.model.Role;
 
 import javax.validation.constraints.*;
 
+import static ru.petproject.inventory.common.ValidationMessage.*;
+
 @Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserNewDto {
-    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
-    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
+    @NotBlank(message = FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = FIELD_MUST_BE_FROM_1_TO_100)
     private String name;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
     private Boolean reporting;
 
-    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
-    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
+    @NotBlank(message = FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = FIELD_MUST_BE_FROM_1_TO_100)
     private String position;
 
-    @NotEmpty(message = ValidationMessage.FIELD_MUST_BE_NOT_EMPTY)
-    @Email(message = ValidationMessage.INVALID_EMAIL)
-    @Size(min = 6, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_6_TO_100)
+    @NotEmpty(message = FIELD_MUST_BE_NOT_EMPTY)
+    @Email(message = INVALID_EMAIL)
+    @Size(min = 6, max = 100, message = FIELD_MUST_BE_FROM_6_TO_100)
     private String email;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
     private Role role;
 }

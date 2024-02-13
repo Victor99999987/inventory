@@ -8,6 +8,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 import static ru.petproject.inventory.common.Const.PATTERN_DATE;
+import static ru.petproject.inventory.common.ValidationMessage.*;
 
 @Setter
 @Getter
@@ -15,37 +16,37 @@ import static ru.petproject.inventory.common.Const.PATTERN_DATE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemNewDto {
-    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
-    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
+    @NotBlank(message = FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 100, message = FIELD_MUST_BE_FROM_1_TO_100)
     private String name;
 
-    @NotBlank(message = ValidationMessage.FIELD_MUST_BE_NOT_BLANK)
-    @Size(min = 1, max = 1000, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_1000)
+    @NotBlank(message = FIELD_MUST_BE_NOT_BLANK)
+    @Size(min = 1, max = 1000, message = FIELD_MUST_BE_FROM_1_TO_1000)
     private String description;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long categoryId;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
-    private Long userId;
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
+    private Long clientId;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long ownerId;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long departmentId;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
     private Boolean serviceable;
 
-    @Size(min = 1, max = 100, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_100)
+    @Size(min = 1, max = 100, message = FIELD_MUST_BE_FROM_1_TO_100)
     private String invNumber;
 
-    @FutureOrPresent(message = ValidationMessage.DATE_MUST_BE_FUTURE_OR_PRESENT)
+    @FutureOrPresent(message = DATE_MUST_BE_FUTURE_OR_PRESENT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PATTERN_DATE)
     private LocalDateTime finished;
 }

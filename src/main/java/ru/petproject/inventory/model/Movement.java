@@ -32,12 +32,12 @@ public class Movement {
     private User toOwner;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "from_user_id", nullable = false)
-    private User fromUser;
+    @JoinColumn(name = "from_client_id", nullable = false)
+    private User fromClient;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "to_user_id", nullable = false)
-    private User toUser;
+    @JoinColumn(name = "to_client_id", nullable = false)
+    private User toClient;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "from_department_id", nullable = false)

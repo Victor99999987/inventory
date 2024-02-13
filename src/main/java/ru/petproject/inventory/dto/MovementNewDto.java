@@ -8,41 +8,37 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+import static ru.petproject.inventory.common.ValidationMessage.*;
+
 @Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovementNewDto {
-    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long fromOwnerId;
 
-    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long toOwnerId;
 
-    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
-    private Long fromUserId;
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
+    private Long fromClientId;
 
-    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
-    private Long toUserId;
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
+    private Long toClientId;
 
-    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long fromDepartmentId;
 
-    //@NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Positive(message = ValidationMessage.FIELD_MUST_BE_POSITIVE)
+    @Positive(message = FIELD_MUST_BE_POSITIVE)
     private Long toDepartmentId;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Size(min = 1, max = 1000, message = ValidationMessage.FIELD_MUST_BE_FROM_1_TO_1000)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
+    @Size(min = 1, max = 1000, message = FIELD_MUST_BE_FROM_1_TO_1000)
     private String description;
 
-    @NotNull(message = ValidationMessage.FIELD_MUST_BE_NOT_NULL)
-    @Size(min = 1, message = ValidationMessage.SET_MIN_SIZE_MUST_BE_1)
+    @NotNull(message = FIELD_MUST_BE_NOT_NULL)
+    @Size(min = 1, message = SET_MIN_SIZE_MUST_BE_1)
     private Set<Long> itemsId;
 }

@@ -23,29 +23,29 @@ import static ru.petproject.inventory.common.Const.SERVER_HOST;
 @Slf4j
 @RequiredArgsConstructor
 public class RegistrationService {
-    private final OrganizationRepository organizationRepository;
-    private final UserRepository userRepository;
+    private final BaseOrganizationService baseOrganizationService;
+    private final BaseUserService baseUserService;
     private final EmailService emailService;
 
     @Transactional
     public RegistrationDto postRegistration(RegistrationNewDto registrationNewDto) {
-        checkExistsUser(registrationNewDto.getEmail());
+        baseUserService.checkExistsUser(registrationNewDto.getEmail());
         Organization organization = Organization.builder()
                 .name(registrationNewDto.getOrganizationName())
-                .activatedCode(generatePassword())
+                .activatedCode(baseUserService.generatePassword())
                 .activated(false)
                 .build();
-        organization = organizationRepository.save(organization);
+        organization = baseOrganizationService.saveOrganization(organization);
         User user = User.builder()
                 .name(registrationNewDto.getUserName())
                 .reporting(true)
                 .position(registrationNewDto.getPosition())
                 .email(registrationNewDto.getEmail())
-                .password(generatePassword())
+                .password(baseUserService.generatePassword())
                 .role(Role.ADMIN)
                 .organization(organization)
                 .build();
-        user = userRepository.save(user);
+        user = baseUserService.saveUser(user);
         emailService.sendSimpleEmail(registrationNewDto.getEmail(),
                 "Подтверждение регистрации",
                 "Для подтверждения регистрации перейдите по ссылке " +
@@ -55,42 +55,18 @@ public class RegistrationService {
 
     @Transactional
     public RegistrationDto patchActivate(Long userId, String activateCode) {
-        User user = getUser(userId);
+        User user = baseUserService.getUser(userId);
         Organization organization = user.getOrganization();
         if (!organization.getActivatedCode().equals(activateCode)) {
             throw new IllegalArgumentException("Неверный код активации");
         }
         organization.setActivated(true);
-        organization = organizationRepository.save(organization);
+        organization = baseOrganizationService.saveOrganization(organization);
         emailService.sendSimpleEmail(user.getEmail(),
                 "Данные для входа в систему ",
                 "организация " + organization.getName() +
                         "логин " + user.getEmail() +
                         "пароль " + user.getPassword());
         return RegistrationMapper.toDto(user);
-    }
-
-    private void checkExistsUser(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new AlreadyExistsException(String.format("Пользователь с email %s уже существует", email));
-        }
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
-    }
-
-    private String generatePassword() {
-        String alphabet = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
-        int length = 10;
-        StringBuilder password = new StringBuilder();
-        Random random = new Random();
-        int index;
-        for (int i = 0; i < length; i++) {
-            index = random.nextInt(alphabet.length());
-            password.append(alphabet.charAt(index));
-        }
-        return password.toString();
     }
 }

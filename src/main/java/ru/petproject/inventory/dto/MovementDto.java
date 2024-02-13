@@ -24,8 +24,8 @@ public class MovementDto {
     private LocalDateTime movementDate;
     private UserShortDto fromOwner;
     private UserShortDto toOwner;
-    private UserShortDto fromUser;
-    private UserShortDto toUser;
+    private UserShortDto fromClient;
+    private UserShortDto toClient;
     private DepartmentDto fromDepartment;
     private DepartmentDto toDepartment;
     private String description;

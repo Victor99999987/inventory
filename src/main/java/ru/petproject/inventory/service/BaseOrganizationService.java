@@ -16,34 +16,10 @@ import ru.petproject.inventory.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class OrganizationService {
+public class BaseOrganizationService {
     private final OrganizationRepository organizationRepository;
-    private final UserRepository userRepository;
 
-    @Transactional
-    public OrganizationDto patchOrganization(Long userId, OrganizationUpdateDto organizationUpdateDto) {
-        User user = getUser(userId);
-        checkAccess(user);
-        Organization organization = user.getOrganization();
-        organization.setName(organizationUpdateDto.getName());
-        organization = organizationRepository.save(organization);
-        return OrganizationMapper.toDto(organization);
-    }
-
-    @Transactional
-    public OrganizationDto getOrganization(Long userId) {
-        User user = getUser(userId);
-        return OrganizationMapper.toDto(user.getOrganization());
-    }
-
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден", userId)));
-    }
-
-    private void checkAccess(User user) {
-        if (user.getRole() != Role.ADMIN) {
-            throw new AccessDeniedException(String.format("Пользователь с id %d не является администратором", user.getId()));
-        }
+    public Organization saveOrganization(Organization organization) {
+        return organizationRepository.save(organization);
     }
 }

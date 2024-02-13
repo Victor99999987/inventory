@@ -11,5 +11,5 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     Optional<Department> findByOrganizationAndId(Organization organization, Long departmentId);
     List<Department> findAllByOrganization(Organization organization);
     boolean existsByOrganizationAndName(Organization organization, String name);
-    boolean existsByOrganizationAndNameAndIdNot(Organization organization, String name, Long notThisId);
+    boolean existsByOrganizationAndNameAndIdNot(Organization organization, String name, Long exceptThisId);
 }

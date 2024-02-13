@@ -12,10 +12,10 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     boolean existsByOrganizationAndName(Organization organization, String name);
-    boolean existsByEmailAndIdNot(String email, Long notThisId);
-    boolean existsByOrganizationAndNameAndIdNot(Organization organization, String name, Long notThisId);
+    boolean existsByEmailAndIdNot(String email, Long exceptThisId);
+    boolean existsByOrganizationAndNameAndIdNot(Organization organization, String name, Long exceptThisId);
     Optional<User> findByOrganizationAndId(Organization organization, Long userId);
     List<User> findAllByOrganization(Organization organization);
     List<User> findByOrganizationAndIdIn(Organization organization, List<Long> usersId);
-    boolean existsByOrganizationAndRoleAndIdNot(Organization organization, Role role, Long notThisId);
+    boolean existsByOrganizationAndRoleAndIdNot(Organization organization, Role role, Long exceptThisId);
 }
