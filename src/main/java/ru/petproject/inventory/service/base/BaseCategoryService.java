@@ -1,4 +1,4 @@
-package ru.petproject.inventory.service;
+package ru.petproject.inventory.service.base;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class BaseCategoryService {
                 .orElseThrow(() -> new NotFoundException(String.format(CATEGORY_NOT_FOUND, id)));
     }
 
-    public List<Category> getCategories(Organization organization){
+    public List<Category> getCategories(Organization organization) {
         return categoryRepository.findAllByOrganization(organization);
     }
 

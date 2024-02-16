@@ -2,11 +2,7 @@ package ru.petproject.inventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import ru.petproject.inventory.model.Department;
-import ru.petproject.inventory.model.Item;
-import ru.petproject.inventory.model.User;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

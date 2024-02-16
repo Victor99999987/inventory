@@ -47,7 +47,7 @@ public class DepartmentController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteDepartment(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,
-                         @PathVariable @Positive Long id) {
+                          @PathVariable @Positive Long id) {
         Utility.logEndpoint(log, request);
         departmentService.deleteDepartment(userId, id);
     }

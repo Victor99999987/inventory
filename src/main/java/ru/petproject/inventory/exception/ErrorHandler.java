@@ -132,7 +132,7 @@ public class ErrorHandler {
         log.debug("Получен статус 403 {} \n {}", e.getMessage(), e.getStackTrace());
         return ApiError.builder()
                 .message(e.getMessage())
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.FORBIDDEN)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -149,12 +149,12 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleSendEmailException(final SendEmailException e) {
-        log.debug("Получен статус 400 {} \n {}", e.getMessage(), e.getStackTrace());
+        log.debug("Получен статус 500 {} \n {}", e.getMessage(), e.getStackTrace());
         return ApiError.builder()
                 .message(e.getMessage())
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

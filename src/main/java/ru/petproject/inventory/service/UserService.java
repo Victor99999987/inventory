@@ -10,6 +10,8 @@ import ru.petproject.inventory.dto.UserUpdateDto;
 import ru.petproject.inventory.mapper.UserMapper;
 import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
+import ru.petproject.inventory.service.base.BaseItemService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 import java.util.List;
 import java.util.stream.Collectors;

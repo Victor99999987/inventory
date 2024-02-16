@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.petproject.inventory.common.Utility;
-import ru.petproject.inventory.dto.MovementDto;
 import ru.petproject.inventory.dto.OrganizationDto;
 import ru.petproject.inventory.dto.OrganizationUpdateDto;
 import ru.petproject.inventory.service.OrganizationService;
@@ -14,8 +13,6 @@ import ru.petproject.inventory.service.OrganizationService;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-
-import java.util.List;
 
 import static ru.petproject.inventory.common.Const.REQUEST_HEADER_USER_ID;
 

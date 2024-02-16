@@ -9,7 +9,6 @@ import ru.petproject.inventory.common.Utility;
 import ru.petproject.inventory.dto.UserDto;
 import ru.petproject.inventory.dto.UserNewDto;
 import ru.petproject.inventory.dto.UserUpdateDto;
-import ru.petproject.inventory.repository.UserRepository;
 import ru.petproject.inventory.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;

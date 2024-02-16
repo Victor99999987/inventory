@@ -1,7 +1,6 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
-import ru.petproject.inventory.common.ValidationMessage;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

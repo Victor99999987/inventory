@@ -1,7 +1,6 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
-import ru.petproject.inventory.common.ValidationMessage;
 import ru.petproject.inventory.model.Role;
 
 import javax.validation.constraints.Email;

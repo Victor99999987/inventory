@@ -1,4 +1,4 @@
-package ru.petproject.inventory.service;
+package ru.petproject.inventory.service.base;
 
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +31,12 @@ public class BaseItemService {
                 .orElseThrow(() -> new NotFoundException(String.format(ITEM_NOT_FOUND, id)));
     }
 
-    public List<Item> getItems(Predicate predicate, int from, int size){
+    public List<Item> getItems(Predicate predicate, int from, int size) {
         Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         return itemRepository.findAll(predicate, pageable).getContent();
     }
 
-    public Set<Item> getItems(Organization organization, Set<Long> ids){
+    public Set<Item> getItems(Organization organization, Set<Long> ids) {
         return itemRepository.findAllByCategory_OrganizationAndIdIn(organization, ids);
     }
 

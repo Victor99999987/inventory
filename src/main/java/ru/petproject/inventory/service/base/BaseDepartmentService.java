@@ -1,4 +1,4 @@
-package ru.petproject.inventory.service;
+package ru.petproject.inventory.service.base;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,15 +22,15 @@ public class BaseDepartmentService {
                 .orElseThrow(() -> new NotFoundException(String.format(DEPARTMENT_NOT_FOUND, id)));
     }
 
-    public List<Department> getDepartments(Organization organization){
+    public List<Department> getDepartments(Organization organization) {
         return departmentRepository.findAllByOrganization(organization);
     }
 
-    public Department saveDepartment(Department department){
+    public Department saveDepartment(Department department) {
         return departmentRepository.save(department);
     }
 
-    public void deleteDepartment(Department department){
+    public void deleteDepartment(Department department) {
         departmentRepository.delete(department);
     }
 

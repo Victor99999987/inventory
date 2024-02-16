@@ -7,13 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.petproject.inventory.common.Utility;
 import ru.petproject.inventory.dto.MovementDto;
 import ru.petproject.inventory.dto.MovementNewDto;
-import ru.petproject.inventory.exception.NotFoundException;
 import ru.petproject.inventory.mapper.MovementMapper;
 import ru.petproject.inventory.model.*;
+import ru.petproject.inventory.service.base.BaseDepartmentService;
+import ru.petproject.inventory.service.base.BaseItemService;
+import ru.petproject.inventory.service.base.BaseMovementService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,40 +81,11 @@ public class MovementService {
                                           LocalDateTime fromDate, LocalDateTime toDate,
                                           int from, int size) {
         User user = baseUserService.getUser(userId);
-        QMovement qMovement = QMovement.movement;
-        Predicate predicate = qMovement.fromOwner.organization.eq(user.getOrganization());
-        if (fromOwnerId != null) {
-            User fromOwner = baseUserService.getUser(user.getOrganization(), fromOwnerId);
-            baseUserService.checkUserByReporting(fromOwner);
-            predicate = qMovement.fromOwner.eq(fromOwner).and(predicate);
-        }
-        if (toOwnerId != null) {
-            User toOwner = baseUserService.getUser(user.getOrganization(), toOwnerId);
-            baseUserService.checkUserByReporting(toOwner);
-            predicate = qMovement.toOwner.eq(toOwner).and(predicate);
-        }
-        if (fromClientId != null) {
-            User fromClient = baseUserService.getUser(user.getOrganization(), fromClientId);
-            predicate = qMovement.fromClient.eq(fromClient).and(predicate);
-        }
-        if (toClientId != null) {
-            User toClient = baseUserService.getUser(user.getOrganization(), toClientId);
-            predicate = qMovement.toClient.eq(toClient).and(predicate);
-        }
-        if (fromDepartmentId != null) {
-            Department fromDepartment = baseDepartmentService.getDepartment(user.getOrganization(), fromDepartmentId);
-            predicate = qMovement.fromDepartment.eq(fromDepartment).and(predicate);
-        }
-        if (toDepartmentId != null) {
-            Department toDepartment = baseDepartmentService.getDepartment(user.getOrganization(), toDepartmentId);
-            predicate = qMovement.toDepartment.eq(toDepartment).and(predicate);
-        }
-        if (fromDate != null) {
-            predicate = qMovement.movementDate.after(fromDate).and(predicate);
-        }
-        if (toDate != null) {
-            predicate = qMovement.movementDate.before(toDate).and(predicate);
-        }
+        Predicate predicate = makePredicateByParams(user.getOrganization(),
+                fromOwnerId, toOwnerId,
+                fromClientId, toClientId,
+                fromDepartmentId, toDepartmentId,
+                fromDate, toDate);
         List<Movement> movements = baseMovementService.getMovements(predicate, from, size);
         return movements.stream()
                 .map(MovementMapper::toDto)
@@ -141,5 +114,47 @@ public class MovementService {
         if (movementNewDto.getFromDepartmentId() == null ^ movementNewDto.getToDepartmentId() == null) {
             throw new IllegalArgumentException(FROM_AND_TO_MUST_BE_NOT_NULL);
         }
+    }
+
+    private Predicate makePredicateByParams(Organization organization,
+                                            Long fromOwnerId, Long toOwnerId,
+                                            Long fromClientId, Long toClientId,
+                                            Long fromDepartmentId, Long toDepartmentId,
+                                            LocalDateTime fromDate, LocalDateTime toDate) {
+        QMovement qMovement = QMovement.movement;
+        Predicate predicate = qMovement.fromOwner.organization.eq(organization);
+        if (fromOwnerId != null) {
+            User fromOwner = baseUserService.getUser(organization, fromOwnerId);
+            baseUserService.checkUserByReporting(fromOwner);
+            predicate = qMovement.fromOwner.eq(fromOwner).and(predicate);
+        }
+        if (toOwnerId != null) {
+            User toOwner = baseUserService.getUser(organization, toOwnerId);
+            baseUserService.checkUserByReporting(toOwner);
+            predicate = qMovement.toOwner.eq(toOwner).and(predicate);
+        }
+        if (fromClientId != null) {
+            User fromClient = baseUserService.getUser(organization, fromClientId);
+            predicate = qMovement.fromClient.eq(fromClient).and(predicate);
+        }
+        if (toClientId != null) {
+            User toClient = baseUserService.getUser(organization, toClientId);
+            predicate = qMovement.toClient.eq(toClient).and(predicate);
+        }
+        if (fromDepartmentId != null) {
+            Department fromDepartment = baseDepartmentService.getDepartment(organization, fromDepartmentId);
+            predicate = qMovement.fromDepartment.eq(fromDepartment).and(predicate);
+        }
+        if (toDepartmentId != null) {
+            Department toDepartment = baseDepartmentService.getDepartment(organization, toDepartmentId);
+            predicate = qMovement.toDepartment.eq(toDepartment).and(predicate);
+        }
+        if (fromDate != null) {
+            predicate = qMovement.movementDate.after(fromDate).and(predicate);
+        }
+        if (toDate != null) {
+            predicate = qMovement.movementDate.before(toDate).and(predicate);
+        }
+        return predicate;
     }
 }

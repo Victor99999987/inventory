@@ -2,7 +2,6 @@ package ru.petproject.inventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import ru.petproject.inventory.common.ValidationMessage;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;

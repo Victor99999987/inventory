@@ -26,6 +26,7 @@ import static ru.petproject.inventory.common.Const.REQUEST_HEADER_USER_ID;
 public class CategoryController {
     private final CategoryService categoryService;
     private final HttpServletRequest request;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CategoryDto postCategory(@RequestHeader(REQUEST_HEADER_USER_ID) @Positive Long userId,

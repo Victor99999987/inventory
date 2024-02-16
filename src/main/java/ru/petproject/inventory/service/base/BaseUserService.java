@@ -1,4 +1,4 @@
-package ru.petproject.inventory.service;
+package ru.petproject.inventory.service.base;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class BaseUserService {
                 .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND, id)));
     }
 
-    public List<User> getUsers(Organization organization){
+    public List<User> getUsers(Organization organization) {
         return userRepository.findAllByOrganization(organization);
     }
 

@@ -10,6 +10,10 @@ import ru.petproject.inventory.dto.ItemNewDto;
 import ru.petproject.inventory.dto.ItemUpdateDto;
 import ru.petproject.inventory.mapper.ItemMapper;
 import ru.petproject.inventory.model.*;
+import ru.petproject.inventory.service.base.BaseCategoryService;
+import ru.petproject.inventory.service.base.BaseDepartmentService;
+import ru.petproject.inventory.service.base.BaseItemService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -99,33 +103,8 @@ public class ItemService {
     public List<ItemDto> getItems(Long userId, String name, Long categoryId, Boolean serviceable, String invNumber,
                                   Long clientId, Long ownerId, Long departmentId, int from, int size) {
         User user = baseUserService.getUser(userId);
-        QItem qItem = QItem.item;
-        Predicate predicate = qItem.category.organization.eq(user.getOrganization());
-        if (name != null) {
-            predicate = qItem.name.containsIgnoreCase(name).and(predicate);
-        }
-        if (categoryId != null) {
-            Category category = baseCategoryService.getCategory(user.getOrganization(), categoryId);
-            predicate = qItem.category.eq(category).and(predicate);
-        }
-        if (serviceable != null) {
-            predicate = qItem.serviceable.eq(serviceable).and(predicate);
-        }
-        if (invNumber != null) {
-            predicate = qItem.invNumber.containsIgnoreCase(invNumber).and(predicate);
-        }
-        if (clientId != null) {
-            User client = baseUserService.getUser(user.getOrganization(), clientId);
-            predicate = qItem.client.eq(client).and(predicate);
-        }
-        if (ownerId != null) {
-            User owner = baseUserService.getUser(user.getOrganization(), ownerId);
-            predicate = qItem.owner.eq(owner).and(predicate);
-        }
-        if (departmentId != null) {
-            Department department = baseDepartmentService.getDepartment(user.getOrganization(), departmentId);
-            predicate = qItem.department.eq(department).and(predicate);
-        }
+        Predicate predicate = makePredicateByParams(user.getOrganization(), name, categoryId, serviceable, invNumber,
+                clientId, ownerId, departmentId);
         List<Item> items = baseItemService.getItems(predicate, from, size);
         return items.stream()
                 .map(ItemMapper::toDto)
@@ -137,5 +116,38 @@ public class ItemService {
         User user = baseUserService.getUser(userId);
         Item item = baseItemService.getItem(user.getOrganization(), id);
         return ItemMapper.toDto(item);
+    }
+
+    private Predicate makePredicateByParams(Organization organization,
+                                            String name, Long categoryId, Boolean serviceable, String invNumber,
+                                            Long clientId, Long ownerId, Long departmentId) {
+        QItem qItem = QItem.item;
+        Predicate predicate = qItem.category.organization.eq(organization);
+        if (name != null) {
+            predicate = qItem.name.containsIgnoreCase(name).and(predicate);
+        }
+        if (categoryId != null) {
+            Category category = baseCategoryService.getCategory(organization, categoryId);
+            predicate = qItem.category.eq(category).and(predicate);
+        }
+        if (serviceable != null) {
+            predicate = qItem.serviceable.eq(serviceable).and(predicate);
+        }
+        if (invNumber != null) {
+            predicate = qItem.invNumber.containsIgnoreCase(invNumber).and(predicate);
+        }
+        if (clientId != null) {
+            User client = baseUserService.getUser(organization, clientId);
+            predicate = qItem.client.eq(client).and(predicate);
+        }
+        if (ownerId != null) {
+            User owner = baseUserService.getUser(organization, ownerId);
+            predicate = qItem.owner.eq(owner).and(predicate);
+        }
+        if (departmentId != null) {
+            Department department = baseDepartmentService.getDepartment(organization, departmentId);
+            predicate = qItem.department.eq(department).and(predicate);
+        }
+        return predicate;
     }
 }

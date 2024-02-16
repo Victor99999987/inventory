@@ -6,16 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.petproject.inventory.dto.RegistrationDto;
 import ru.petproject.inventory.dto.RegistrationNewDto;
-import ru.petproject.inventory.exception.AlreadyExistsException;
-import ru.petproject.inventory.exception.NotFoundException;
 import ru.petproject.inventory.mapper.RegistrationMapper;
 import ru.petproject.inventory.model.Organization;
 import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
-import ru.petproject.inventory.repository.OrganizationRepository;
-import ru.petproject.inventory.repository.UserRepository;
-
-import java.util.Random;
+import ru.petproject.inventory.service.base.BaseOrganizationService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 import static ru.petproject.inventory.common.Const.SERVER_HOST;
 

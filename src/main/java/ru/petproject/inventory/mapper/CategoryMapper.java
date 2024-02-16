@@ -6,7 +6,7 @@ import ru.petproject.inventory.model.Category;
 
 @UtilityClass
 public class CategoryMapper {
-    public static CategoryDto toDto(Category category){
+    public static CategoryDto toDto(Category category) {
         return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())

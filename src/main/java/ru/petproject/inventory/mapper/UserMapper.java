@@ -1,12 +1,8 @@
 package ru.petproject.inventory.mapper;
 
 import lombok.experimental.UtilityClass;
-import ru.petproject.inventory.dto.CategoryDto;
-import ru.petproject.inventory.dto.OrganizationDto;
 import ru.petproject.inventory.dto.UserDto;
 import ru.petproject.inventory.dto.UserShortDto;
-import ru.petproject.inventory.model.Category;
-import ru.petproject.inventory.model.Role;
 import ru.petproject.inventory.model.User;
 
 @UtilityClass

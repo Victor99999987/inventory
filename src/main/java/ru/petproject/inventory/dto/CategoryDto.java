@@ -1,9 +1,6 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
-import ru.petproject.inventory.model.Organization;
-
-import javax.persistence.*;
 
 @Setter
 @Getter

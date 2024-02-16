@@ -1,7 +1,6 @@
 package ru.petproject.inventory.dto;
 
 import lombok.*;
-import ru.petproject.inventory.model.Role;
 
 @Setter
 @Getter

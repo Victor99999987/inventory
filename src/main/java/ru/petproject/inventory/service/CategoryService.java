@@ -9,6 +9,9 @@ import ru.petproject.inventory.dto.CategoryUpdateDto;
 import ru.petproject.inventory.mapper.CategoryMapper;
 import ru.petproject.inventory.model.Category;
 import ru.petproject.inventory.model.User;
+import ru.petproject.inventory.service.base.BaseCategoryService;
+import ru.petproject.inventory.service.base.BaseItemService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 import java.util.List;
 import java.util.stream.Collectors;

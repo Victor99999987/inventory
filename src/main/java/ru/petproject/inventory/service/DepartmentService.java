@@ -8,7 +8,11 @@ import ru.petproject.inventory.dto.DepartmentDto;
 import ru.petproject.inventory.dto.DepartmentNewDto;
 import ru.petproject.inventory.dto.DepartmentUpdateDto;
 import ru.petproject.inventory.mapper.DepartmentMapper;
-import ru.petproject.inventory.model.*;
+import ru.petproject.inventory.model.Department;
+import ru.petproject.inventory.model.User;
+import ru.petproject.inventory.service.base.BaseDepartmentService;
+import ru.petproject.inventory.service.base.BaseItemService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 import java.util.List;
 import java.util.stream.Collectors;

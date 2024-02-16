@@ -8,6 +8,8 @@ import ru.petproject.inventory.dto.OrganizationUpdateDto;
 import ru.petproject.inventory.mapper.OrganizationMapper;
 import ru.petproject.inventory.model.Organization;
 import ru.petproject.inventory.model.User;
+import ru.petproject.inventory.service.base.BaseOrganizationService;
+import ru.petproject.inventory.service.base.BaseUserService;
 
 @Service
 @RequiredArgsConstructor
